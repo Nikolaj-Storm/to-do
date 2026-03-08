@@ -7,9 +7,10 @@ struct GlassTodosApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .frame(minWidth: 340, minHeight: 420)
+                .frame(minWidth: 320, minHeight: 400)
         }
         .windowStyle(.titleBar)
-        .defaultSize(width: 380, height: 520)
+        .windowToolbarStyle(.unified(showsTitle: false))
+        .defaultSize(width: 400, height: 600)
     }
 }

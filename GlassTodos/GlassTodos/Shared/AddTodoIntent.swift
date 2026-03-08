@@ -1,5 +1,4 @@
 import AppIntents
-import WidgetKit
 
 // MARK: - Add Todo Intent
 // Used by the widget's "+" button to create a new task.

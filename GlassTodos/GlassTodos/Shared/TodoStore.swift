@@ -2,20 +2,19 @@ import Foundation
 import WidgetKit
 
 // MARK: - Todo Store
-// Persists items via App Group UserDefaults so both the app and widget can access them.
+// Persists items via App Group UserDefaults so both the app and widget share data.
 //
-// ┌─────────────────────────────────────────────────────────┐
-// │  APP GROUP SETUP                                        │
-// │                                                         │
-// │  1. In Xcode, select each target (GlassTodos AND        │
-// │     GlassTodosWidgetExtension).                         │
-// │  2. Go to Signing & Capabilities → + Capability →       │
-// │     App Groups.                                         │
-// │  3. Add: group.com.yourname.GlassTodos                  │
-// │  4. Make sure both targets use the SAME group ID.        │
-// │                                                         │
-// │  To change the identifier, update `appGroupID` below.   │
-// └─────────────────────────────────────────────────────────┘
+// ┌──────────────────────────────────────────────────────────┐
+// │  APP GROUP SETUP                                         │
+// │                                                          │
+// │  1. In Xcode, select each target (GlassTodos AND         │
+// │     GlassTodosWidgetExtension).                          │
+// │  2. Signing & Capabilities → + Capability → App Groups.  │
+// │  3. Add: group.com.yourname.GlassTodos                   │
+// │  4. Both targets must use the SAME group ID.              │
+// │                                                          │
+// │  To change the identifier, update `appGroupID` below.    │
+// └──────────────────────────────────────────────────────────┘
 
 final class TodoStore {
 
@@ -31,7 +30,7 @@ final class TodoStore {
               let data = defaults.data(forKey: storeKey),
               let items = try? JSONDecoder().decode([TodoItem].self, from: data)
         else {
-            return Self.sampleItems()
+            return sampleItems()
         }
         return items.sorted { $0.position < $1.position }
     }
@@ -43,8 +42,6 @@ final class TodoStore {
               let data = try? JSONEncoder().encode(items)
         else { return }
         defaults.set(data, forKey: storeKey)
-
-        // Tell WidgetKit to refresh the timeline so the widget updates immediately.
         WidgetCenter.shared.reloadAllTimelines()
     }
 
@@ -71,6 +68,13 @@ final class TodoStore {
         save(items)
     }
 
+    static func clearDone() {
+        var items = load()
+        items.removeAll { $0.isDone }
+        reindex(&items)
+        save(items)
+    }
+
     static func reindex(_ items: inout [TodoItem]) {
         items.sort { $0.position < $1.position }
         for i in items.indices { items[i].position = i }
@@ -78,12 +82,13 @@ final class TodoStore {
 
     // MARK: - Defaults
 
-    /// Shown on first launch so the widget isn't empty.
     private static func sampleItems() -> [TodoItem] {
         [
-            TodoItem(title: "Buy groceries", position: 0),
-            TodoItem(title: "Read a chapter", position: 1),
-            TodoItem(title: "Go for a walk", position: 2),
+            TodoItem(title: "Plan the week ahead", position: 0),
+            TodoItem(title: "Buy groceries", position: 1),
+            TodoItem(title: "Read a chapter", position: 2),
+            TodoItem(title: "Go for a walk", position: 3),
+            TodoItem(title: "Water the plants", position: 4),
         ]
     }
 }

@@ -1,12 +1,12 @@
 import AppIntents
 
-// MARK: - Toggle Todo Intent
-// Used by the widget's interactive checkmark buttons.
+// MARK: - Delete Todo Intent
+// Used by the widget's swipe‑to‑delete or trash button.
 
-struct ToggleTodoIntent: AppIntent {
+struct DeleteTodoIntent: AppIntent {
 
-    static var title: LocalizedStringResource = "Toggle Todo"
-    static var description: IntentDescription = "Marks a task as done or not done."
+    static var title: LocalizedStringResource = "Delete Todo"
+    static var description: IntentDescription = "Removes a task from the list."
 
     @Parameter(title: "Item ID")
     var itemID: String
@@ -19,7 +19,7 @@ struct ToggleTodoIntent: AppIntent {
 
     func perform() async throws -> some IntentResult {
         guard let uuid = UUID(uuidString: itemID) else { return .result() }
-        TodoStore.toggleDone(id: uuid)
+        TodoStore.deleteItem(id: uuid)
         return .result()
     }
 }
